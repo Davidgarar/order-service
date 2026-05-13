@@ -1,0 +1,8 @@
+co\vivaeventos\orderservice\client\EventClient.class
+co\vivaeventos\orderservice\OrderServiceApplication.class
+co\vivaeventos\orderservice\model\Order.class
+co\vivaeventos\orderservice\service\OrderService.class
+co\vivaeventos\orderservice\controller\OrderController.class
+co\vivaeventos\orderservice\repository\OrderRepository.class
+co\vivaeventos\orderservice\controller\OrderController$CreateOrderRequest.class
+co\vivaeventos\orderservice\client\EventClient$EventResponse.class
