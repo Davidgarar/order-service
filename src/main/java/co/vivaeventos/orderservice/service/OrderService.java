@@ -17,13 +17,13 @@ public class OrderService {
     private final EventClient eventClient;
     
     @Transactional
-    public Order createOrder(Long eventId, Integer quantity, String userEmail) {
-        log.info("Creando orden para evento {} con cantidad {}", eventId, quantity);
+    public Order createOrder(Long eventId, Integer quantity, String userEmail, String ticketType, String token) {
+        log.info("Creando orden para evento {} tipo {} cantidad {}", eventId, ticketType, quantity);
         
-        // 1. Verificar y reservar boletos en Event Service
-        EventClient.EventResponse event = eventClient.reserveTickets(eventId, quantity);
+        // Pasar el token en el header
+        EventClient.EventResponse event = eventClient.reserveTicketsByType(
+            eventId, ticketType, quantity, "Bearer " + token);
         
-        // 2. Crear la orden - usando el constructor con parámetros
         Order order = new Order();
         order.setEventId(eventId);
         order.setQuantity(quantity);
@@ -31,12 +31,10 @@ public class OrderService {
         order.setStatus("PENDING");
         order.setUserEmail(userEmail);
         
-        // 3. Guardar la orden
         return orderRepository.save(order);
     }
     
     private Double calculateTotal(Integer quantity) {
-        // Precio base por boleto: $50,000
         return quantity * 50000.0;
     }
     

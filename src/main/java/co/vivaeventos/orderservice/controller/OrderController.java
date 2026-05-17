@@ -19,12 +19,17 @@ public class OrderController {
     private final OrderService orderService;
     
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
-        log.info("Recibida solicitud de orden para evento: {}", request.eventId());
+    public ResponseEntity<Order> createOrder(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody CreateOrderRequest request) {
+        String token = authorization.substring(7); // Quitar "Bearer "
+        log.info("Recibida solicitud de orden para evento: {} tipo: {}", request.eventId(), request.ticketType());
         Order order = orderService.createOrder(
             request.eventId(), 
             request.quantity(), 
-            request.userEmail()
+            request.userEmail(),
+            request.ticketType(),
+            token
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
@@ -39,7 +44,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderByNumber(orderNumber));
     }
     
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")  // Cambiado de @PatchMapping a @PutMapping
     public ResponseEntity<Order> updateStatus(
             @PathVariable Long id, 
             @RequestBody Map<String, String> statusUpdate) {
@@ -47,5 +52,6 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
     
-    public record CreateOrderRequest(Long eventId, Integer quantity, String userEmail) {}
+
+    public record CreateOrderRequest(Long eventId, Integer quantity, String userEmail, String ticketType) {}
 }
