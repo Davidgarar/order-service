@@ -20,7 +20,7 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    // Crear boleta (para pruebas)
+    // Crear boleta
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody Map<String, Object> request) {
         try {
@@ -63,7 +63,7 @@ public class TicketController {
     // Ver detalle de boleta por QR
     @GetMapping("/qr/{qrCode}")
     public ResponseEntity<?> getTicketByQrCode(@PathVariable String qrCode) {
-        Optional<Ticket> ticket = ticketService.getTicketByQrCode(qrCode);
+        Optional<Ticket> ticket = ticketService.findByQrCode(qrCode);
         
         if (ticket.isEmpty()) {
             Map<String, Object> error = new HashMap<>();

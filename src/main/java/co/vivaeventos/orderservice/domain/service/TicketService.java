@@ -25,7 +25,11 @@ public class TicketService {
         return ticketRepository.findByOrderId(orderId);
     }
 
-    public Optional<Ticket> getTicketByQrCode(String qrCode) {
+    public Optional<Ticket> findByQrCode(String qrCode) {
         return ticketRepository.findByQrCode(qrCode);
+    }
+
+    public Ticket saveTicket(Ticket ticket) {
+        return ticketRepository.save(ticket);
     }
 }
