@@ -17,8 +17,8 @@ public class OrderService {
     private final EventClient eventClient;
     
     @Transactional
-    public Order createOrder(Long eventId, Integer quantity, String userEmail, String ticketType, String token) {
-        log.info("Creando orden para evento {} tipo {} cantidad {}", eventId, ticketType, quantity);
+    public Order createOrder(Long eventId, Integer quantity, String userEmail, String ticketType, String couponCode, String token) {
+        log.info("Creando orden para evento {} tipo {} cantidad {} con cupón: {}", eventId, ticketType, quantity, couponCode);
         
         // Pasar el token en el header
         EventClient.EventResponse event = eventClient.reserveTicketsByType(
@@ -27,15 +27,27 @@ public class OrderService {
         Order order = new Order();
         order.setEventId(eventId);
         order.setQuantity(quantity);
-        order.setTotalAmount(calculateTotal(quantity));
+        order.setTotalAmount(calculateTotal(quantity, couponCode)); // <-- Se envía el código para calcular el total
         order.setStatus("PENDING");
         order.setUserEmail(userEmail);
+        
+        // Opcional: Si decides añadir 'couponCode' a tu clase entidad Order.java, puedes descomentar la siguiente línea:
+        // order.setCouponCode(couponCode);
         
         return orderRepository.save(order);
     }
     
-    private Double calculateTotal(Integer quantity) {
-        return quantity * 50000.0;
+    // Lógica encargada de interceptar el cálculo base y aplicar la reducción por cupón
+    private Double calculateTotal(Integer quantity, String couponCode) {
+        double subtotal = quantity * 50000.0;
+        double discount = 0.0;
+        
+        if (couponCode != null && couponCode.equalsIgnoreCase("VIVA2026")) {
+            discount = subtotal * 0.10; // 10% de descuento sobre el subtotal
+            log.info("¡Cupón VIVA2026 procesado con éxito! Descuento: ${} (Subtotal original: ${})", discount, subtotal);
+        }
+        
+        return subtotal - discount;
     }
     
     public Order getOrderById(Long id) {

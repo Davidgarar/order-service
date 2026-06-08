@@ -29,6 +29,7 @@ public class OrderController {
             request.quantity(), 
             request.userEmail(),
             request.ticketType(),
+            request.couponCode(), // <-- Se añade el paso del parámetro cupón
             token
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
@@ -52,6 +53,6 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
     
-
-    public record CreateOrderRequest(Long eventId, Integer quantity, String userEmail, String ticketType) {}
+    // Se actualiza el Record DTO agregando couponCode al final
+    public record CreateOrderRequest(Long eventId, Integer quantity, String userEmail, String ticketType, String couponCode) {}
 }
