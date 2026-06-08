@@ -24,4 +24,9 @@ public class DashboardController {
     public ResponseEntity<Map<String, Object>> getSalesByEvent(@PathVariable Long eventId) {
         return ResponseEntity.ok(dashboardService.getSalesByEvent(eventId));
     }
+
+    @GetMapping("/sales/by-hour")
+    public ResponseEntity<Map<String, Object>> getSalesByHour() {
+        return ResponseEntity.ok(dashboardService.getSalesByHour());
+    }
 }

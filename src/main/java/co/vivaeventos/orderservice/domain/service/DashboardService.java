@@ -83,4 +83,45 @@ public class DashboardService {
         
         return eventSales;
     }
+    public Map<String, Object> getSalesByHour() {
+    Map<String, Object> result = new HashMap<>();
+    
+    List<Ticket> allTickets = ticketRepository.findAll();
+    
+    // Ventas por hora del día (0-23)
+    Map<Integer, Integer> salesByHour = new HashMap<>();
+    Map<Integer, Double> revenueByHour = new HashMap<>();
+    
+    // Inicializar todas las horas con 0
+    for (int i = 0; i < 24; i++) {
+        salesByHour.put(i, 0);
+        revenueByHour.put(i, 0.0);
+    }
+    
+    for (Ticket ticket : allTickets) {
+        if (ticket.getCreatedAt() != null) {
+            int hour = ticket.getCreatedAt().getHour();
+            salesByHour.put(hour, salesByHour.getOrDefault(hour, 0) + 1);
+            revenueByHour.put(hour, revenueByHour.getOrDefault(hour, 0.0) + ticket.getPrice());
+        }
+    }
+    
+    // Encontrar la hora con más ventas
+    int peakHour = 0;
+    int maxSales = 0;
+    for (Map.Entry<Integer, Integer> entry : salesByHour.entrySet()) {
+        if (entry.getValue() > maxSales) {
+            maxSales = entry.getValue();
+            peakHour = entry.getKey();
+        }
+    }
+    
+    result.put("salesByHour", salesByHour);
+    result.put("revenueByHour", revenueByHour);
+    result.put("peakHour", peakHour);
+    result.put("peakHourSales", maxSales);
+    result.put("peakHourRevenue", revenueByHour.get(peakHour));
+    
+    return result;
+}
 }
